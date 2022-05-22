@@ -1,0 +1,57 @@
+#watched your last review, can't believe I am one of the only people not using java! It is NOT an elegant langauge :(
+#I know at least Alden is using something else. Can't see him doing these in anything but python
+
+#Anyway this is knox rooom reservations
+
+#I have made a fairly basic priority queue setup that takes a name a rank and a room
+#Ranks is set up as a module
+#room is a string (would be an enum if I was ready to sit and code every room into this but alas)
+#name is also a string
+
+#name was not in the original problem but otherwise how do we know who resereved the room?
+
+require 'set'
+
+module Ranks #Module to make ranks into a number
+    President = 4
+    Dean = 3
+    Proffesor = 2
+    Student = 1
+end
+
+
+class RoomReservation
+    def initialize  
+        @reservations = [] 
+    end
+
+    def reserve(room, rank, name)
+        @reservations.unshift([room, rank, name]) #unshift is push but the upossite side so that it is chronological instead of reverse chronological
+    end
+
+    def pull
+        @reservations = @reservations.sort_by {|reservation| [reservation[1]]} #sorts by rank
+        takenRooms = Set.new #Need a set to track duplicates
+        toReturn = []  #and an Array to reurn in order (if ordered return isn't needed could get away with just the set)
+        while @reservations[0]
+            x = @reservations.pop
+            if takenRooms.add? x[0]  #cute that this is just one command that both adds and checks if it added in Ruby
+                toReturn.push([x[0], x[2]])
+            end
+        end
+        toReturn
+    end
+end
+
+x = RoomReservation.new
+
+x.reserve("gym", Ranks::President, "McGadney")
+x.reserve("Lab", Ranks::Proffesor, "Cermak")
+x.reserve("Lab", Ranks::Proffesor, "Larry")
+x.reserve("gym", Ranks::Proffesor, "Larry")
+
+#if this works Larry shouldn't manage to reserve anything
+
+p x.pull 
+
+#and sadly he can't :(
